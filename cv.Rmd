@@ -1,0 +1,656 @@
+---
+output: 
+  pdf_document:  
+    df_print: kable 
+    highlight: tango
+    includes: 
+      in_header: ['structure.tex']
+latex_engine: xelatex
+urlcolor: bluelink #defined in structure.txt
+linkcolor: bluelink
+params:
+  # first line (i.e., similar to title) in your CV
+  title: 'Fadel M. Megahed, PhD'
+  
+  # contact me information
+  name_for_google_scholar_link: 'Fadel Megahed'
+  email: 'fmegahed@miamioh.edu'
+  github: 'fmegahed'
+  twitter: 'FadelMegahed'
+  
+  # your google scholar id (e.g., https://scholar.google.com/citations?user=6CTlKGMAAAAJ)
+  scholar_id: '6CTlKGMAAAAJ' # my id is easily extracted from my Scholar Profile link above
+  
+  # my name appears as Fadel Megahed and Fadel M Megahed in my publications
+  # as shown here: https://scholar.google.com/scholar?hl=en&as_sdt=0%2C36&q=fadel+megahed&btnG=&oq=F
+  author_name: 'FM Megahed'
+  
+  # identify the last name or full names of graduate students who co-authored publications with you
+  # as shown below (make sure that the comma is included in the comments since I will parse based on it)
+  # !r is needed to pass an R object (here, a chr vector) as a paramater
+  graduate_student_names: !r c('Lamooki,' , 'Hajifar,', 'Zhao, L.', 'Dolatsara,', 'Mehdizadeh,', 'Yazdi,', 'Cai,', 'Hu,', 'Lu, L.', 'Baghdadi,', 'Mohabbati-Kalejahi,', 'Maman,', 'Weng, B.', 'Tsai, YT.', 'Negahban,', 'Ahmed,', 'Dag,', 'Alhwiti,', 'Ansari,')
+  graduate_student_indicator: '※' # cannot be an a* and has to be a symbol recognized by RMarkdown
+  
+  # identify the last name or full names of undergrad students who co-authored publications with you
+  # as shown below (make sure that the comma is included in the comments since I will parse based on it)
+  undergrad_student_names: !r c('Moore, JF.', 'Evans, C.', 'Murphy, WW.', 'Smith, HD.', 'Niziolek,')
+  undergrad_student_indicator: '§' # cannot be an * and has to be a symbol recognized by RMarkdown
+  
+  # Patterns to detect non-journal papers in "journal" titles from Google Scholar
+  non_journal: !r c('Proceedings|Conference|Conferences|Workshop|Technical Paper|Virginia|Frontiers in Statistical Quality Control|arXiv|bioRxiv|PeerJ')
+  invited_paper_titles: !r c('A DMAIC Perspective on Physical Fatigue Management', 'The Class Imbalance Problem', 'Discussion on “real-Time Monitoring of Events Applied to Syndromic Surveillance”') 
+  conf_patterns: !r c('Proceedings|Conference|Conferences|Workshop|Technical Paper|Frontiers in Statistical Quality Control')
+  
+  # Prettying up some conference names
+  # typically ends with ... in your Google Profile page (but do not include the dots here)
+  # just pick a long enough part of the string
+  terrible_conf_names_google: !r c('2020 8th IEEE RAS/EMBS International Conference for Biomedical Robotics and', '2016 15th IEEE Intersociety Conference on Thermal and Thermomechanical', 'International Design Engineering Technical Conferences and Computers and')
+  
+  # actual conference names (can be found by opening the link for each paper)
+  actual_conf_names: !r c('2020 8th IEEE RAS/EMBS International Conference for Biomedical Robotics and  Biomechatronics (BioRob)', '2016 15th IEEE Intersociety Conference on Thermal and Thermomechanical Phenomena in Electronic Systems (ITherm)', 'ASME 2016 International Design Engineering Technical Conferences and Computers and Information in Engineering Conference')
+  
+  # google_sheet link containing funding information, teaching awards, teaching, etc
+  # make sure that the link sharing settings allow viewing for anyone with a link
+  gsheet_link: 'https://docs.google.com/spreadsheets/d/1WBJbSBZOTdhPGQTuM80Iffl-CcFhvz5SifLGMkTQWMc/edit?usp=sharing'
+  
+  # professional memberships
+  memberships: !r c('American Society for Quality', 'American Society for Safety Engineers', 'Institute for Operations Research and the Management Sciences', 'Egyptian Engineer’s Syndicate', 'International Society for Heart and Lung Transplantation')
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      cache = FALSE)
+```
+
+
+<!-- --------------------------------------------------------------- -->
+<!-- Output Not Included in Printout between the lines above and below; -->
+<!-- printed output starts with my name -->
+
+<!-- Required Packages -->
+
+```{r pkgs, cache=FALSE}
+if(require(pacman)==F) install.packages('pacman')
+
+pacman::p_load(
+  tinytex, # for latex
+  tidyverse, # for data manipulation
+  tools, # for titleCase (I like it more than the stringr version)
+  scholar, # for extracting your scholar information
+  googlesheets4, # for extracting data from my google sheets
+  rsvg, fontawesome, # for fontawesome icons
+  knitr, kableExtra) # for nicely formatted tables
+
+miamired = '#F5002F'
+
+source('custom_functions.R')
+```
+
+
+<!-- Getting and Formatting Publications Citation Data from Scholar -->
+
+```{r scholar_cites}
+# My Google Profile Summary
+profile = get_profile(params$scholar_id)
+
+# Citation data from my Google Profile
+total_cites =  profile$total_cites
+i_10index = profile$i10_index
+h_index = profile$h_index
+
+# -----------------------------------------------------------------------------
+# Get my Google Scholar Publications
+pubs_tbl = 
+  get_publications(params$scholar_id, sortby = 'year') %>%
+  # ensuring title case for both journal names and paper titles
+  mutate(title = tools::toTitleCase(title),
+         journal = tools::toTitleCase(journal) ) %>% 
+  rowwise() %>% 
+  mutate(
+    author = case_when(
+      str_ends(author, "\\.\\.\\.") ~ get_complete_authors(id = params$scholar_id, pubid = pubid),
+      TRUE ~ author
+    )
+  )
+
+
+# ----------------------------------------------------------------------------
+
+# Bolding all variants of my name in my publications
+if(length(params$author_name) == 1){
+  formatted_pub_names = format_publications_mod(
+    pubs = pubs_tbl, author.name = params$author_name[1])
+}else{
+  for (i in 1:length(params$author_name)) {
+    formatted_pub_names = format_publications_mod(
+    pubs = pubs_tbl, author.name = params$author_name[i])
+  }
+}
+
+
+# ----------------------------------------------------------------------------
+
+# Formatting graduate and undergraduate student names in my publication list
+# (by adding an indicator after their last name)
+
+grad_names_with_symbol = str_replace_all(
+  params$graduate_student_names,
+  pattern = ',',
+  replacement = paste0(params$graduate_student_indicator, ',')
+  )
+
+# making a named vector of grad_names with symbols
+names(grad_names_with_symbol) = params$graduate_student_names
+
+undergrad_names_with_symbol = str_replace_all(
+  params$undergrad_student_names,
+  pattern = ',',
+  replacement = paste0(params$undergrad_student_indicator, ',')
+  )
+
+# making a named vector of undergrad_names with symbols
+names(undergrad_names_with_symbol) = params$undergrad_student_names
+
+formatted_pub_names =
+  formatted_pub_names %>% 
+  str_replace_all(grad_names_with_symbol) %>% 
+  str_replace_all(undergrad_names_with_symbol)
+
+
+pubs_tbl = pubs_tbl %>% 
+  add_column(formatted_pub_names, .before = 'title') %>% 
+  arrange(desc(year))
+
+
+# --------------------------------------------------------------------------
+
+# Hacking the pubs_tbl to separate journals from conference proceedings, invited papers and arxiv 
+journal_tbl = pubs_tbl %>%
+  # needs to be edited
+  filter(
+    !str_detect(
+      journal, pattern = params$non_journal) & 
+      journal != '' & 
+      !title %in% params$invited_paper_title
+    )
+
+invited_tbl = pubs_tbl %>%
+  filter(title %in% params$invited_paper_title)
+  
+conf_tbl =  pubs_tbl %>%
+  # needs to be edited
+  filter(
+    str_detect(journal, pattern = params$conf_pattern) |
+      # for some reason IEEE conferences showed up in number
+      str_detect(number, pattern = params$conf_pattern) 
+  )
+```
+
+
+<!-- Other CV Data -->
+
+```{r cv_data_from_google_sheet}
+# required in_browser authentication to be able to read your data
+# my sheet below is public for your viewing
+# https://docs.google.com/spreadsheets/d/1WBJbSBZOTdhPGQTuM80Iffl-CcFhvz5SifLGMkTQWMc/edit?usp=sharing
+# you can copy it and edit for your data
+# from Google Sheets
+
+# remove any existing authentications
+gs4_deauth()
+
+# PhD Students advised
+students_tbl = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'students'
+)
+
+# External Funding
+external_funding = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'funding'
+) %>% 
+  filter(type == 'external')
+
+sponsors_chr = external_funding %>% arrange(desc(total_funding)) %>% 
+  pull(funder) %>% unique() %>% head(n = 6)
+
+# Computational Grants
+comp_funding = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'funding'
+) %>% 
+  filter(type == 'computational')
+
+# Internal Grants
+internal_funding = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'funding'
+) %>% 
+  filter(type == 'internal')
+
+# Classroom Teaching
+classroom_tbl = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'classroom'
+)
+
+classes_taught = classroom_tbl %>% 
+  pull(class) %>% 
+  str_extract('[0-9]{3}') %>% 
+  # The 501 course was cross-listed with 401 so I should not double count it
+  str_replace(pattern = '501', replacement = '401') %>% 
+  # The 480 course is our temp course number and it became 419 in Fall 2022
+  str_replace(pattern = '480', replacement = '419') %>% 
+  unique()
+
+# Teaching Awards
+awards_and_commendations_tbl = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'awards_and_commendations'
+)
+
+# Professional Service
+professional_service = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'service'
+) %>% 
+  filter(type == 'external')
+
+```
+
+
+
+<!-- --------------------------------------------------------------- -->
+
+<!-- Start of Printed Output -->
+
+```{r title_print, results='asis'}
+cat (
+  paste(
+    '\\begin{flushleft} \\LARGE \\bfseries', params$title, '\\end{flushleft}'
+    ) 
+)
+
+cat('\\vspace{0.5\\baselineskip}')
+
+
+# contact me details
+cat(
+  paste0(
+    # email information
+    '\\faEnvelope{\\href{mailto:', params$email, '}{',
+    params$email, '}} \\hfill',
+    '\\faGoogle{\\href{',
+    # google scholar information
+    paste0('https://scholar.google.com/citations?user=', params$scholar_id),
+    '}{', params$name_for_google_scholar_link,
+    '}} \\hfill',
+    # github information
+    '\\faGithub{\\href{',
+    paste0('https://github.com/', params$github),
+    '}{', params$github, '}} \\hfill',
+    # twitter information
+    '\\faTwitter{\\href{',
+    paste0('https://twitter.com/', params$twitter),
+    '}{@', params$twitter, '}} \\hfill'
+         )
+)
+
+```
+
+
+
+# Impact Summary
+
+## Research
+
+`r fa('bookmark', fill = 'miaimred')` **Externally Funded Research:** ~ \$`r scales::label_number_si(accuracy=0.01)(sum(external_funding$total_funding))` with my share ~ \$ `r scales::label_number_si(accuracy=10)(sum(external_funding$funding_share))`. \ul{Sponsors include:} `r paste(paste(noquote(sponsors_chr[1:5]),collapse=', '), noquote(sponsors_chr[6]),sep=', and ')`.
+
+`r fa('bookmark')` **Publications:** `r nrow(journal_tbl)` peer-reviewed journal papers, `r nrow(invited_tbl)` invited editorials, and `r nrow(conf_tbl)` conference proceedings
+
+`r fa('bookmark')` **Total Citations:** `r total_cites %>% scales::comma()`; \ul{h-index:} `r h_index`, and \ul{i10-index:} `r i_10index`
+
+`r fa('bookmark')` **Press Coverage:** Research findings have been covered by over 50 media outlets including: [Arizona Republic Online](http://finance.azcentral.com/azcentral/news/read/37528814/research_shows_value_of_wearable_technology_in_reducing_workplace_injuries), [Bloomberg](https://news.bloombergenvironment.com/safety/wireless-monitoring-can-limit-injuries-but-raises-concerns), [Industry Week](https://www.industryweek.com/talent/using-technology-measure-manufacturing-worker-fatigue), [SupplyChainDive](https://www.supplychaindive.com/news/wearables-warehouse-trucking-worker-labor-safety/610466/) and [Yahoo Finance](https://finance.yahoo.com/news/research-shows-value-wearable-technology-161923455.html).
+
+
+## Teaching and Mentoring
+
+`r fa('bookmark')` **PhD Advisor:** for `r nrow(students_tbl)` PhD recipients (all from Auburn University).
+
+`r fa('bookmark')` **Classroom Teaching:** Since joining Miami University in Fall 2016, I have taught `r length(classes_taught)` different courses and a total of `r nrow(classroom_tbl)` sections. The courses spanned the entire spectrum of business analytics, including topics on *introductory statistics*, *data visualization*, *forecasting*, *operations Research*, and *data-driven security*. My pedagogical contributions were recognized with `r awards_and_commendations_tbl %>% filter(type == 'Teaching Award') %>% nrow()` `r if_else(awards_and_commendations_tbl %>% filter(type == 'Teaching Award') %>% nrow() > 1, true ='university-wide teaching awards', false = 'university-wide teaching award' )`, and  `r awards_and_commendations_tbl %>% filter(type == 'Faculty Staff Commendations') %>% nrow()` `r if_else(awards_and_commendations_tbl %>% filter(type == 'Faculty Staff Commendations') %>% nrow() > 1, true ='faculty commendations', false = 'faculty commendation' )` by graduating students as a part of their anonymous survey when they collect their diplomas. 
+
+
+<!-- --------------------------------------------------------------- -->
+
+# Education
+
+```{r edu_code, results='asis'}
+
+tribble(
+  # table headers for education
+  ~Degree, 
+  ~Date, 
+  ~Institution, 
+  ~Location,
+  # ------- | ------- | ------- | -------
+  'PhD Industrial & Systems Engineering', 2012, 'Virginia Tech', 'Blacksburg, VA',
+  'M.S. Industrial & Systems Engineering', 2009, 'Virginia Tech', 'Blacksburg, VA',
+  'B.S. Mechanical Engineering', 2008, 'The American University in Cairo', 'Cairo, Egypt'
+) %>% 
+  kable(format = 'latex', align = 'lcll', booktabs = TRUE) %>% 
+  kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") %>% 
+  row_spec(0, align = 'c', bold=T )
+```
+
+
+<!-- --------------------------------------------------------------- -->
+
+# Honors and Awards
+
+```{r honors, results='asis'}
+# commented text works well for a small number of awards
+# comment out the awards_tbl part if you want to uncomment the code below
+
+# awards_and_commendations_tbl %>%
+#   filter(type != 'Faculty Staff Commendations') %>%
+#   arrange(end_year) %>%
+#   mutate(`#` = row_number(),
+#          year = paste0(year, '--', end_year)) %>%
+#   select(`#`, organization, description, year) %>%
+#   arrange(desc(end_year)) %>%
+#   rename(`#` = `#`, `Awarded By` = organization, `Description` = description, Year = year) %>%
+#   kable(format = 'latex', align = 'lp{0.2\\textwidth}p{0.6\\textwidth}c', booktabs = TRUE) %>%
+#   kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") %>%
+#   row_spec(0, align = 'c', bold=T )
+
+awards_tbl = 
+  awards_and_commendations_tbl %>%
+  filter(type != 'Faculty Staff Commendations') %>%
+  arrange(desc(end_year))
+
+formated_awards = paste0(
+  '- **',
+  awards_tbl$organization, ':** *',
+  awards_tbl$description,
+  ',*  ',
+  awards_tbl$year, '--', awards_tbl$end_year,
+  '. \n \n')
+
+cat(formated_awards)
+```
+
+
+<!-- --------------------------------------------------------------- -->
+
+# Academic Experience
+
+<!-- No automation in the academic appointments section since it changes slowly -->
+
+<!-- Miami University -->
+
+\noindent \faUniversity \textbf{Miami University} \hfill \faAt Department of Information Systems and  Analytics \faMapPin[regular]  Oxford, OH  
+
+\faIdBadge \textit{Enders Associate Professor} \hfill \faCalendarCheck[regular] July 2022--current  
+\faIdBadge \textit{Associate Professor} \hfill \faCalendarCheck[regular] July 2020--current  
+\faIdBadge \textit{Neil R. Anderson Assistant Professor} \hfill \faCalendarCheck[regular] July 2019--Jun 2020   
+\faIdBadge \textit{Assistant Professor} \hfill \faCalendarCheck[regular] Aug 2016--Jun 2020 
+
+\begin{itemize}[parsep=5pt]
+
+\item Ongoing research in applied machine learning, data visualization, physical fatigue modeling, statistical surveillance, stock market prediction, transportation analytics.
+
+\item Redesigned the \textit{Quantitative Analysis of Business Problems} course, developed the \textit{Data-Driven Security} course and assisted with the successful proposal for our MSBA program. Furthermore, I have made significant updates to the \textit{Business Intelligence and Data Visualization} course, where I introduced modules on \textit{data quality/validation}, \textit{use of data mining for data exploration}, and \textit{use of multiple platforms for dashboard development}.
+
+\item \textbf{Courses Taught:}
+\begin{itemize}[nosep]
+  \item ISA 203: Supplementary Business Statistics \hfill  \faCalendarCheck[regular] Last taught: S2018
+  \item ISA 321: Quantitative Analysis of Business Problems \hfill  \faCalendarCheck[regular] Last taught: F2018
+  \item ISA 401/501: Business Intelligence \& Data Visualization \hfill  \faCalendarCheck[regular] Last taught: F2022 \newline 
+  $\qquad \qquad$ \ul{Course Materials:} Publicly available at \href{https://github.com/fmegahed/isa401}{ISA 401 GitHub Repo}
+  \item ISA 419: Data-Driven Security \hfill \faCalendarCheck[regular] Last taught: F2022
+  \item ISA 444: Business Forecasting \hfill \faCalendarCheck[regular] Last taught: S2022 \newline
+  $\qquad \qquad$ \ul{Course Materials:} Publicly available at \href{https://github.com/fmegahed/isa444}{ISA 444 GitHub Repo}
+\end{itemize}
+
+\item \textbf{Dissertation Committees:}  Kelly Ayres (Biostatistics, Expected Ph.D. 2023, Saint Louis University), Longwen Zhao (Biostatistics, Ph.D. 2022, Saint Louis University), Sahand Hajifar (Industrial, Ph.D. 2022, University at Buffalo), Saeb Ragani Lamooki (outside reader: Mechanical and Aerospace Engineering, Ph.D. 2022, University at Buffalo), Eileen Rintsch (Geography,  M.S. 2021), Miao Cai (Biostatistics, Ph.D. 2020, Saint Louis University), Amir Baghdadi (outside reader: Mechanical and Aerospace Engineering, Ph.D. 2019, University at Buffalo).
+
+\item \textbf{Service:} 
+  \begin{itemize}[nosep]
+    	\item VP for Research and Innovation Search Committee: Member \hfill  \faCalendarCheck[regular] 2021--2022
+	    \item Divisional Committee on Societal Impact: Member \hfill  \faCalendarCheck[regular] 2021--2023
+	    \item Dept. Search Committee for Lecturer Position: Chair \hfill  \faCalendarCheck[regular] 2021--2023
+	    \item Divisional Research Committee: Member \hfill  \faCalendarCheck[regular] 2021--2023
+	    \item MU Carbon Offsets Subcommittee: Member \hfill  \faCalendarCheck[regular] 2020--2023
+		  \item Divisional Technology Policies Committee: Member \hfill  \faCalendarCheck[regular] 2019--2020
+		  \item Dept. Search Committee for \ul{5} TT positions: Member \hfill  \faCalendarCheck[regular] 2017--2020
+		  \item Major/Minor Coordination Committee: 
+		  \begin{itemize}[nosep]
+		     \item Chair \hfill  \faCalendarCheck[regular] 2019--2023
+		     \item Member \hfill  \faCalendarCheck[regular] 2017--2019
+		  \end{itemize} 
+		  \item Center for Analytics and Data Science: Project lead \hfill  \faCalendarCheck[regular]  2016--2019
+		  \item Master of Science in Business Analytics Curriculum: Proposal Developer  \hfill  \faCalendarCheck[regular] 2018--2018 \newline I co-contributed to the initial design of five proposed courses (2018)
+		\item STAR Seminar Series Committee:  \hfill  \faCalendarCheck[regular] 2016--2017
+  \end{itemize}
+\end{itemize}
+
+\vspace{\baselineskip}
+
+<!-- Auburn -->
+
+\noindent \faUniversity \textbf{Auburn University} \hfill \faAt Department of Industrial and Systems Engineering \faMapPin[regular]  Auburn, AL   
+
+\faIdBadge \textit{Affiliate Assistant Professor} \hfill \faCalendarCheck[regular] Aug 2016--Aug 2020     
+\faIdBadge \textit{Assistant Professor} \hfill \faCalendarCheck[regular] Aug 2012--Aug 2016  
+
+\begin{itemize}[parsep = 3pt]
+	\item Research in data mining, data visualization, spatio-temporal statistics, statistical surveillance, stock market prediction, transportation analytics.
+	\item Initiated and taught a graduate/undergraduate course on \textit{Data Visualization} (Spring 2014 and Spring 2016).
+	\item \textbf{\ul{Advisor}}: \href{https://facultyprofile.fairfield.edu/?uname=llu}{Lin Lu} (Industrial, Ph.D. 2019), \href{https://www2.clarku.edu/faculty/facultybio.cfm?id=1189}{Hamidreza Ahady Dolatsara} (Industrial, Ph.D. 2019), \href{https://carey.jhu.edu/faculty/faculty-directory/mohammad-ali-alamdar-yazdi-phd}{Mohammad Ali Alamdar Yazdi} (Industrial, Ph.D. 2018), \href{https://www.adelphi.edu/faculty/profiles/profile.php?PID=0870}{Zahra Sedighi Maman} (Industrial, Ph.D. 2018), \href{https://www.linkedin.com/in/binweng/}{Bin Weng} (Industrial, Ph.D. 2017), \href{https://www.baystate.edu/about-baystate/faculty-staff/theyab-alhwiti/}{Theyab Alhwiti} (Industrial, Ph.D. 2017), \href{https://scholar.google.com/citations?user=ETGzb1cAAAAJ&hl=en}{Ali Dag} (Industrial, Ph.D. 2016), \href{https://www.linkedin.com/in/alexander-schnichels/}{Alexander Schnichels} (B.S. Thesis at FH Aachen-Germany, 2016), \href{http://www.itra.fcu.edu.tw/wSite/ct?xItem=182298&ctNode=36356&mp=425102&idPath=}{Yao-Te Tsai} (Industrial, Ph.D. 2015).
+	\item Initiated and taught a graduate/undergraduate course on \textit{Big Data Analytics} (Spring 2013).
+	\item \textbf{Dissertation Committees:} Amir Mehdizadeh (Industrial, Ph.D. 2022), Qiong Hu (Industrial, Ph.D. 2021),  Mohammadnaser Ansari (Industrial, Ph.D. 2020), Ali Aldubiassi (Industrial, Ph.D. 2020), Nasrin Mohabbati Kalejahi (Industrial, Ph.D. 2019), Ebrahim Mortaz (Industrial, Ph.D. 2017), Eren Sakinc (Industrial, Ph.D. 2016), Thomas Sanders (Industrial, Ph.D. 2016), Masood Jabarnejad (Industrial, Ph.D. 2015), Heather Avery (Computer Science, Ph.D. 2015), Zhou Hai (Industrial, Ph.D. 2014), Adam Paul (Computer Science, M.S. 2014), Melody Denhere (reader: Statistics, Ph.D. 2013), Dilcu Helvaci (Industrial, Ph.D. 2013). 
+	\item \textbf{Service:} Faculty Advisor to Alpha Pi Mu (2014-2016), Graduate Admissions Committee (2014-2016), Library Coordinator (2013-2016), Department Chair Administrative Review Committee (2014-2015), Search Committee Member for Administrative Support Associate (2013), and Department Representative at Summer Graduation (2013).
+
+\end{itemize}
+
+\vspace{\baselineskip}
+
+<!-- Virginia Tech -->
+
+\noindent \faUniversity \textbf{Virginia Tech} \hfill \faAt Grado Department of Industrial and Systems Engineering \faMapPin[regular]  Blacksburg, VA    
+
+\faIdBadge \textit{Graduate Teaching Assistant} \hfill \faCalendarCheck[regular] Jan--May 2012    
+$\quad$ \faIdBadge \textit{Instructor} \hfill \faCalendarCheck[regular] Aug--Dec 2011   
+$\quad$ \faIdBadge \textit{Graduate Research Assistant} \hfill \faCalendarCheck[regular] Jan 2010--Aug 2011  
+$\quad$ \faIdBadge \textit{Graduate Teaching Assistant} \hfill \faCalendarCheck[regular] Aug 2009--Dec 2010  
+
+\begin{itemize}[parsep = 3pt]
+    \item Research in quality control methodologies for massive datasets. Duties included: publishing work, presenting at national conferences, mentoring undergraduate student researchers, writing proposals, and preparing yearly reports for the NSF GOALI grant.
+    \item Taught two sections of \textit{Production Planning and Inventory Control} with full course responsibility.
+    \item As a graduate teaching assistant, I held problem sessions, made exams, graded quizzes, and assisted the faculty with handling the students’ projects. I was a co-recipient of GTA of the year.
+\end{itemize}
+
+
+<!-- --------------------------------------------------------------- -->
+
+# Publications
+
+## Journal Publications 
+
+- Conventions used in my publications list throughout this CV: 
+    * **Authorship order** follows the [traditional scientific authorship conventions](https://www.science.org/content/article/conventions-scientific-authorship-0#:~:text=The%20corresponding%20author%20is%20the,middle%20of%20the%20author%20list.), where PI is placed last (or second-to-last in papers stemming from collaborative grants, e.g., with Cavuoto or Rigdon). 
+    * `r params$graduate_student_indicator` and `r params$undergrad_student_indicator` are used to denote graduate and undergraduate students that I advised/mentored.  
+
+\vspace{0.5\baselineskip}
+
+```{r journal_pubs_print, results='asis'}
+formatted_pub_names = paste0('1. ', journal_tbl$formatted_pub_names, '.  \n \n')
+cat(formatted_pub_names)
+```
+
+
+## Invited Papers/Discussions
+```{r invited_print, results='asis'}
+formatted_inv_names = paste0('1. ', invited_tbl$formatted_pub_names, '.  \n \n')
+cat(formatted_inv_names)
+```
+
+
+## Conference Proceedings and Book Chapters
+
+```{r conf_proc_print, results='asis'}
+actual_conferences = params$actual_conf_names
+names(actual_conferences) = params$terrible_conf_names_google
+
+conf_tbl$formatted_pub_names = 
+  conf_tbl$formatted_pub_names %>% 
+  str_replace_all(actual_conferences)
+
+formatted_conf_proc = paste0('1. ', conf_tbl$formatted_pub_names, '.  \n \n')
+cat(formatted_conf_proc)
+```
+
+
+<!-- --------------------------------------------------------------- -->
+
+# Funded Projects
+
+## External Funding
+
+```{r external_funding, results='asis'}
+formated_external_funding = paste0(
+  '1. "',
+  external_funding$project_title, '", ',
+  external_funding$role_and_collaborators,
+  ', **',
+  external_funding$funder,
+  '**, $',
+  scales::comma(external_funding$total_funding),
+  ' ( Share: $', scales::comma(external_funding$funding_share),
+  '), ',
+  external_funding$start_year, '--', external_funding$end_year,
+  '.  \n \n')
+
+cat(formated_external_funding)
+```
+
+
+## Internal Funding
+
+```{r internal_grants, results='asis'}
+formated_internal_funding = paste0(
+  '1. "',
+  internal_funding$project_title, '", ',
+  internal_funding$role_and_collaborators,
+  ', **',
+  internal_funding$funder,
+  '**, $',
+  scales::comma(internal_funding$total_funding),
+  ', ', internal_funding$start_year, '--', internal_funding$end_year,
+  '.  \n \n')
+
+cat(formated_internal_funding)
+```
+
+
+## Computational Grants
+
+```{r comp_grants, results='asis'}
+formated_comp_funding = paste0(
+  '1. "',
+  comp_funding$project_title, '", ',
+  comp_funding$role_and_collaborators,
+  ', **',
+  comp_funding$funder,
+  '**, ',
+  comp_funding$funding_computational,
+  ', ', comp_funding$start_year, '--', comp_funding$end_year,
+  '.  \n \n')
+
+cat(formated_comp_funding)
+```
+
+
+<!-- --------------------------------------------------------------- -->
+
+# PhD Students Advised
+
+```{r phd_students}
+students_tbl %>% 
+  mutate(`#` = row_number()) %>% 
+  relocate(`#`) %>% 
+  rename_with( .fn = ~ toTitleCase( gsub("_", " ", .x, fixed = TRUE) ) ) %>% 
+  kable(format = 'latex', align = 'cp{0.175\\textwidth}p{0.1\\textwidth}p{0.2\\textwidth}cp{0.275\\textwidth}', booktabs = TRUE) %>% 
+  kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") %>% 
+  row_spec(0, align = 'c', bold = T) 
+```
+
+
+<!-- --------------------------------------------------------------- -->
+
+# Professional Experience
+
+\noindent \faBuilding \textbf{Institut fur Textiltechnik der RWTH Aachen} \hfill \faMapPin[regular]  Aachen, Germany \hfill \faCalendarCheck[regular] Summer 2007  
+
+$\quad$ \faIdBadge \textit{Undergraduate Researcher} 
+\begin{itemize}[nosep]
+    \item Developed a GUI to measure yarn properties using image processing techniques.
+    \item Developed a GUI to measure various quality parameters of non-woven fabrics. 
+    \item Researched fiber migration in air jet spun yarns.
+\end{itemize}
+
+
+\vspace{\baselineskip}
+
+
+\noindent \faBuilding \textbf{British Gas} \hfill \faMapPin[regular]  Cairo, Egypt \hfill \faCalendarCheck[regular] Summer 2007/2008  
+
+$\quad$ \faIdBadge \textit{Engineering, Health and Safety Intern} 
+\begin{itemize}[nosep]
+    \item Assisted in coordinating the Behavioral Based Safety Program, prepared the Health Risk Assessment file for all BG Egypt Activities.
+    \item Participated in the weekly safety inspection for the \textit{Egyptian Liquefied Gas Site}. 
+    \item Trained radio operators on the emergency response procedures.
+\end{itemize}
+
+
+<!-- --------------------------------------------------------------- -->
+
+
+# Professional Memberships
+
+```{r memberships, results='asis'}
+prof_memb = paste0('- ', params$memberships, '.  \n \n')
+cat(prof_memb)
+```
+
+
+<!-- --------------------------------------------------------------- -->
+
+# Professional Service
+
+```{r prof_service, results='asis'}
+formated_prof_service = paste0(
+  '- ',
+  professional_service$role, ', *',
+  professional_service$organization,
+  ',*  ',
+  professional_service$start_year, '--', professional_service$end_year,
+  '.  \n \n')
+
+cat(formated_prof_service)
+
+```
+
+
+<!-- --------------------------------------------------------------- -->
+
+# Skills
+
+- **Statistical Packages:** `r fa('r-project')`, Minitab, JMP.  
+- **Optimization Software:** Lindo/Lingo; some exposure to Cplex.  
+- **Programming Languages:** `r fa('r-project')`; some experience with MATLAB and Python.  
+- **Data Visualization:** `r fa('r-project')`, Tableau, PowerBI; some exposure to D3.js.  
+- **Applications:**   `r fa('r-project')`: [rmarkdown](https://fmegahed.github.io/covid_deaths.html), [flexdashboard](http://rstudio.fsb.miamioh.edu:3838/megahefm/metric_interpretation/), [xarigan](https://fmegahed.github.io/isa401/class01/01_Introduction.html); and *gradio:* [TAVR web app](https://huggingface.co/spaces/fmegahed/tavr_project)

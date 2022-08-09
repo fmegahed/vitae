@@ -1,0 +1,70 @@
+\usepackage[utf8]{inputenc}
+
+\usepackage{xcolor}
+\usepackage{lineno}
+\usepackage{setspace}
+
+\usepackage[export]{adjustbox}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage[title]{appendix}
+\usepackage{bibentry}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{color}
+\usepackage{enumitem}
+\usepackage{epstopdf}
+\usepackage{etoolbox}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage[fixed]{fontawesome5}
+\usepackage{graphicx}
+\usepackage{lastpage}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{natbib}
+\usepackage{rotating}
+\usepackage{soul}
+\usepackage{tabu}
+\usepackage{tikz}
+\usepackage{verbatim}
+
+\definecolor{miamired}{RGB}{200,16,46}
+\definecolor{bluelink}{HTML}{007bff}
+
+\usepackage[colorlinks = true,
+linkcolor = bluelink,
+urlcolor  = bluelink,
+citecolor = bluelink,
+anchorcolor = bluelink]{hyperref}
+
+\usepackage{subcaption}
+
+\setcounter{secnumdepth}{0}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{%
+            \node[shape=circle,fill=miamired!30,draw,inner sep=1pt] (char) {#1};}}
+\renewcommand{\labelitemi}{$\textcolor{miamired}{\bullet}$}
+\renewcommand{\contentsname}{Table of Contents}
+
+\interfootnotelinepenalty=10000
+\newcolumntype{P}[1]{>{\centering\arraybackslash\hspace{0pt}}p{#1}}
+
+
+\usepackage[explicit]{titlesec}
+    % Raised Rule Command:
+    % Arg 1 (Optional) - How high to raise the rule
+    % Arg 2 - Thickness of the rule
+    \newcommand{\raisedrulefill}[2][0ex]{\leaders\hbox{\rule[#1]{1pt}{#2}}\hfill}
+    \titleformat{\section}{\Large\bfseries}{\thesection. }{0em}{#1\,\raisedrulefill[0.4ex]{2pt}}
+
+
+
+\author{}
+\date{}
+
+\pagestyle{fancy}
+\fancyhf{} % sets both header and footer to nothing
+\renewcommand{\headrulewidth}{0pt}
+\lfoot{Updated with \faRProject ~on \today}
+\rfoot{Page \thepage \, out of \pageref{LastPage}}
