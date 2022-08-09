@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.4.14)  9 AUG 2022 14:44
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.3) (preloaded format=pdflatex 2022.4.14)  9 AUG 2022 15:26
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1112,17 +1112,17 @@ pdfTeX warning: pdflatex.exe (file ./cv_files/figure-latex/fa-icon-4185ea412ee0
 d in a single page
 >]
 LaTeX Font Info:    Trying to load font information for U+fontawesomefree3 on i
-nput line 273.
+nput line 272.
 
 (C:\Users\megahefm\AppData\Roaming\MiKTeX\tex/latex/fontawesome5\ufontawesomefr
 ee3.fd)
 LaTeX Font Info:    Trying to load font information for U+fontawesomefree0 on i
-nput line 274.
+nput line 273.
 
 (C:\Users\megahefm\AppData\Roaming\MiKTeX\tex/latex/fontawesome5\ufontawesomefr
 ee0.fd)
 LaTeX Font Info:    Trying to load font information for U+fontawesomefree2 on i
-nput line 275.
+nput line 274.
 
 (C:\Users\megahefm\AppData\Roaming\MiKTeX\tex/latex/fontawesome5\ufontawesomefr
 ee2.fd)
@@ -1131,7 +1131,7 @@ Package fontawesome5 Warning: The requested icon map-pin has been replaced by
 (fontawesome5)                the solid version
 
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 3
-16.
+15.
 (C:\Program Files\MiKTeX\tex/latex/lm\ts1lmr.fd
 File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
@@ -1145,6 +1145,21 @@ Package fontawesome5 Warning: The requested icon map-pin has been replaced by
 (fontawesome5)                the solid version
 
 [3] [4] [5] [6] [7] [8]
+Underfull \hbox (badness 10000) in paragraph at lines 863--863
+[]|\T1/lmr/m/n/10 (+20) Auburn
+ []
+
+
+Underfull \hbox (badness 5490) in paragraph at lines 863--863
+[]|\T1/lmr/m/n/10 (+20) PhD, In-dus-trial &
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 864--864
+[]|\T1/lmr/m/n/10 (+20) Hamid Ahady
+ []
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 864--864
 []|\T1/lmr/m/n/10 (+20) Auburn
  []
@@ -1155,29 +1170,8 @@ Underfull \hbox (badness 5490) in paragraph at lines 864--864
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 864--865
-[]|\T1/lmr/m/n/10 (+20) Assistant Pro-fes-sor of
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 864--865
-\T1/lmr/m/n/10 (+20) Busi-ness An-a-lyt-ics at
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 864--865
-\T1/lmr/m/n/10 (+20) Fair-field Uni-ver-sity
- []
-
-
-Overfull \hbox (141.00565pt too wide) in paragraph at lines 864--865
-\T1/lmr/m/n/10 (-20) [\href{https://facultyprofile.fairfield.edu/?uname=llu}{Fa
-culty
- []
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 865--865
-[]|\T1/lmr/m/n/10 (+20) Hamid Ahady
+[]|\T1/lmr/m/n/10 (+20) Mohammad Ali
  []
 
 
@@ -1188,11 +1182,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 865--865
 
 Underfull \hbox (badness 5490) in paragraph at lines 865--865
 []|\T1/lmr/m/n/10 (+20) PhD, In-dus-trial &
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 866--866
-[]|\T1/lmr/m/n/10 (+20) Mohammad Ali
  []
 
 
@@ -1216,12 +1205,12 @@ Underfull \hbox (badness 5490) in paragraph at lines 867--867
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 868--868
+Underfull \hbox (badness 10000) in paragraph at lines 869--869
 []|\T1/lmr/m/n/10 (+20) Auburn
  []
 
 
-Underfull \hbox (badness 5490) in paragraph at lines 868--868
+Underfull \hbox (badness 5490) in paragraph at lines 869--869
 []|\T1/lmr/m/n/10 (+20) PhD, In-dus-trial &
  []
 
@@ -1246,16 +1235,6 @@ Underfull \hbox (badness 5490) in paragraph at lines 871--871
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 872--872
-[]|\T1/lmr/m/n/10 (+20) Auburn
- []
-
-
-Underfull \hbox (badness 5490) in paragraph at lines 872--872
-[]|\T1/lmr/m/n/10 (+20) PhD, In-dus-trial &
- []
-
-
 Package fontawesome5 Warning: The requested icon map-pin has been replaced by
 (fontawesome5)                the solid version
 
@@ -1265,7 +1244,7 @@ Package fontawesome5 Warning: The requested icon map-pin has been replaced by
 
 [9]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 9
-54.
+53.
 (C:\Program Files\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 )
@@ -1275,15 +1254,15 @@ File: cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e55a411dd.pdf Graphi
 c file (type pdf)
 <use cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e55a411dd.pdf>
 Package pdftex.def Info: cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e
-55a411dd.pdf  used on input line 984.
+55a411dd.pdf  used on input line 983.
 (pdftex.def)             Requested size: 11.2995pt x 9.97473pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 983--987
+Underfull \hbox (badness 10000) in paragraph at lines 982--986
 
  []
 
 [10]
-Underfull \hbox (badness 10000) in paragraph at lines 987--989
+Underfull \hbox (badness 10000) in paragraph at lines 986--988
 
  []
 
@@ -1291,10 +1270,10 @@ File: cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e55a411dd.pdf Graphi
 c file (type pdf)
 <use cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e55a411dd.pdf>
 Package pdftex.def Info: cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e
-55a411dd.pdf  used on input line 990.
+55a411dd.pdf  used on input line 989.
 (pdftex.def)             Requested size: 11.2995pt x 9.97473pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 989--993
+Underfull \hbox (badness 10000) in paragraph at lines 988--992
 
  []
 
@@ -1302,10 +1281,10 @@ File: cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e55a411dd.pdf Graphi
 c file (type pdf)
 <use cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e55a411dd.pdf>
 Package pdftex.def Info: cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e
-55a411dd.pdf  used on input line 994.
+55a411dd.pdf  used on input line 993.
 (pdftex.def)             Requested size: 11.2995pt x 9.97473pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 993--997
+Underfull \hbox (badness 10000) in paragraph at lines 992--996
 
  []
 
@@ -1313,18 +1292,18 @@ File: cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e55a411dd.pdf Graphi
 c file (type pdf)
 <use cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e55a411dd.pdf>
 Package pdftex.def Info: cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e
-55a411dd.pdf  used on input line 998.
+55a411dd.pdf  used on input line 997.
 (pdftex.def)             Requested size: 11.2995pt x 9.97473pt.
 
 AED: lastpage setting LastPage
 [11 <./cv_files/figure-latex/fa-icon-3b6b9d998f60a2b82069ad0e55a411dd.pdf>] (cv
 .aux) ) 
 Here is how much of TeX's memory you used:
- 33299 strings out of 478582
- 618793 string characters out of 2854150
+ 33295 strings out of 478582
+ 618749 string characters out of 2854150
  943760 words of memory out of 3000000
  50512 multiletter control sequences out of 15000+600000
- 523312 words of font info for 174 fonts, out of 8000000 for 9000
+ 523088 words of font info for 172 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  84i,12n,117p,1193b,539s stack positions out of 10000i,1000n,20000p,200000b,80000s
 {C:/Program Files/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}{C:/Program Files/
@@ -1344,7 +1323,7 @@ ic/fontawesome5/FontAwesome5Free-Solid.pfb><C:/Program Files/MiKTeX/fonts/type1
 ><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Program Files/MiK
 TeX/fonts/type1/public/lm/lmri10.pfb><C:/Program Files/MiKTeX/fonts/type1/publi
 c/lm/lmsy10.pfb><C:/Program Files/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on cv.pdf (11 pages, 326359 bytes).
+Output written on cv.pdf (11 pages, 325055 bytes).
 PDF statistics:
  360 PDF objects out of 1000 (max. 8388607)
  120 named destinations out of 1000 (max. 500000)

@@ -4,9 +4,9 @@ output:
     df_print: kable 
     highlight: tango
     includes: 
-      in_header: ['structure.tex']
+      in_header: https://raw.githubusercontent.com/fmegahed/vitae/main/structure.tex
 latex_engine: xelatex
-urlcolor: bluelink #defined in structure.txt
+urlcolor: bluelink
 linkcolor: bluelink
 params:
   # first line (i.e., similar to title) in your CV
@@ -85,7 +85,7 @@ pacman::p_load(
 
 miamired = '#F5002F'
 
-source('custom_functions.R')
+source('https://raw.githubusercontent.com/fmegahed/vitae/main/custom_functions.R')
 ```
 
 
