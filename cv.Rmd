@@ -37,9 +37,9 @@ params:
   undergrad_student_indicator: '§' # cannot be an * and has to be a symbol recognized by RMarkdown
   
   # Patterns to detect non-journal papers in "journal" titles from Google Scholar
-  non_journal: !r c('Proceedings|Conference|Conferences|Workshop|Technical Paper|Virginia|Frontiers in Statistical Quality Control|arXiv|bioRxiv|PeerJ')
+  non_journal: !r c('Proceedings|Conference|Conferences|Workshop|Technical Paper|Virginia|Frontiers in Statistical Quality Control|Advanced Manufacturing Methods|arXiv|bioRxiv|PeerJ')
   invited_paper_titles: !r c('A DMAIC Perspective on Physical Fatigue Management', 'The Class Imbalance Problem', 'Discussion on “real-Time Monitoring of Events Applied to Syndromic Surveillance”') 
-  conf_patterns: !r c('Proceedings|Conference|Conferences|Workshop|Technical Paper|Frontiers in Statistical Quality Control')
+  conf_patterns: !r c('Proceedings|Conference|Conferences|Workshop|Technical Paper|Frontiers in Statistical Quality Control|Advanced Manufacturing Methods')
   
   # Prettying up some conference names
   # typically ends with ... in your Google Profile page (but do not include the dots here)
@@ -119,15 +119,9 @@ pubs_tbl =
 # ----------------------------------------------------------------------------
 
 # Bolding all variants of my name in my publications
-if(length(params$author_name) == 1){
-  formatted_pub_names = format_publications_mod(
-    pubs = pubs_tbl, author.name = params$author_name[1])
-}else{
-  for (i in 1:length(params$author_name)) {
-    formatted_pub_names = format_publications_mod(
-    pubs = pubs_tbl, author.name = params$author_name[i])
-  }
-}
+
+formatted_pub_names = format_publications_mod(
+  pubs = pubs_tbl, author.name = params$author_name[1])
 
 
 # ----------------------------------------------------------------------------
@@ -653,4 +647,4 @@ cat(formated_prof_service)
 - **Optimization Software:** Lindo/Lingo; some exposure to Cplex.  
 - **Programming Languages:** `r fa('r-project')`; some experience with MATLAB and Python.  
 - **Data Visualization:** `r fa('r-project')`, Tableau, PowerBI; some exposure to D3.js.  
-- **Applications:**   `r fa('r-project')`: [rmarkdown](https://fmegahed.github.io/covid_deaths.html), [flexdashboard](http://rstudio.fsb.miamioh.edu:3838/megahefm/metric_interpretation/), [xarigan](https://fmegahed.github.io/isa401/class01/01_Introduction.html); and *gradio:* [TAVR web app](https://huggingface.co/spaces/fmegahed/tavr_project)
+- **Applications:**   `r fa('r-project')`: [rmarkdown](https://fmegahed.github.io/covid_deaths.html), [flexdashboard](http://rstudio.fsb.miamioh.edu:3838/megahefm/metric_interpretation/), [xarigan](https://fmegahed.github.io/isa401/fall2022/class01/01_Introduction.html); and *gradio:* [TAVR web app](https://huggingface.co/spaces/fmegahed/tavr_project)
