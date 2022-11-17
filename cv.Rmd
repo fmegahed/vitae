@@ -201,6 +201,12 @@ students_tbl = read_sheet(
   sheet = 'students'
 )
 
+# PhD Student committees
+phd_comm_tbl = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'dissertations'
+)
+
 # External Funding
 external_funding = read_sheet(
   ss = params$gsheet_link,
@@ -253,6 +259,26 @@ professional_service = read_sheet(
 ) %>% 
   filter(type == 'external')
 
+# Miami Service
+miami_service = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'service'
+) %>% 
+  filter(type == 'miami')
+
+# FSB Service
+fsb_service = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'service'
+) %>% 
+  filter(type == 'college')
+
+# ISA Service
+isa_service = read_sheet(
+  ss = params$gsheet_link,
+  sheet = 'service'
+) %>% 
+  filter(type == 'isa')
 ```
 
 
@@ -507,6 +533,9 @@ formatted_conf_proc = paste0('1. ', conf_tbl$formatted_pub_names, '.  \n \n')
 cat(formatted_conf_proc)
 ```
 
+## Invited Talks
+
+
 
 <!-- --------------------------------------------------------------- -->
 
@@ -582,6 +611,81 @@ students_tbl %>%
   row_spec(0, align = 'c', bold = T) 
 ```
 
+<!-- --------------------------------------------------------------- -->
+
+# Dissertation Committees
+
+```{r phd_comm}
+phd_comm_tbl %>% 
+  rename_with( .fn = ~ toTitleCase( gsub("_", " ", .x, fixed = TRUE) ) ) %>% 
+  kable(format = 'latex', align = 'rlllc', booktabs = TRUE) %>% 
+  kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") %>% 
+  row_spec(0, align = 'c', bold = T) 
+```
+
+
+<!-- --------------------------------------------------------------- -->
+
+# Service
+
+## Professional Service
+
+```{r prof_service, results='asis'}
+formated_prof_service = paste0(
+  '- ',
+  professional_service$role, ', *',
+  professional_service$organization,
+  ',*  ',
+  professional_service$start_year, '--', professional_service$end_year,
+  '.  \n \n')
+
+cat(formated_prof_service)
+```
+
+## Service to the University
+
+### University Committees
+
+```{r miami_service, results='asis'}
+formated_miami_service = paste0(
+  '- ',
+  miami_service$role, ', *',
+  miami_service$organization,
+  ',*  ',
+  miami_service$start_year, '--', miami_service$end_year,
+  '.  \n \n')
+
+cat(formated_miami_service)
+```
+
+### FSB Committees
+
+```{r fsb_service, results='asis'}
+formated_fsb_service = paste0(
+  '- ',
+  fsb_service$role, ', *',
+  fsb_service$organization,
+  ',*  ',
+  fsb_service$start_year, '--', fsb_service$end_year,
+  '.  \n \n')
+
+cat(formated_fsb_service)
+```
+
+### Departmental Committees
+
+```{r isa_service, results='asis'}
+formated_isa_service = paste0(
+  '- ',
+  isa_service$role, ', *',
+  isa_service$organization,
+  ',*  ',
+  isa_service$start_year, '--', isa_service$end_year,
+  '.  \n \n')
+
+cat(formated_isa_service)
+```
+
 
 <!-- --------------------------------------------------------------- -->
 
@@ -618,24 +722,6 @@ $\quad$ \faIdBadge \textit{Engineering, Health and Safety Intern}
 ```{r memberships, results='asis'}
 prof_memb = paste0('- ', params$memberships, '.  \n \n')
 cat(prof_memb)
-```
-
-
-<!-- --------------------------------------------------------------- -->
-
-# Professional Service
-
-```{r prof_service, results='asis'}
-formated_prof_service = paste0(
-  '- ',
-  professional_service$role, ', *',
-  professional_service$organization,
-  ',*  ',
-  professional_service$start_year, '--', professional_service$end_year,
-  '.  \n \n')
-
-cat(formated_prof_service)
-
 ```
 
 
