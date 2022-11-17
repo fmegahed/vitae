@@ -257,21 +257,24 @@ professional_service = read_sheet(
   ss = params$gsheet_link,
   sheet = 'service'
 ) %>% 
-  filter(type == 'external')
+  filter(type == 'external') %>% 
+  arrange(desc(end_year))
 
 # Miami Service
 miami_service = read_sheet(
   ss = params$gsheet_link,
   sheet = 'service'
 ) %>% 
-  filter(type == 'miami')
+  filter(type == 'miami') %>% 
+  arrange(desc(end_year))
 
 # FSB Service
 fsb_service = read_sheet(
   ss = params$gsheet_link,
   sheet = 'service'
 ) %>% 
-  filter(type == 'college')
+  filter(type == 'college') %>% 
+  arrange(desc(end_year))
 
 # ISA Service
 isa_service = read_sheet(
@@ -533,9 +536,6 @@ formatted_conf_proc = paste0('1. ', conf_tbl$formatted_pub_names, '.  \n \n')
 cat(formatted_conf_proc)
 ```
 
-## Invited Talks
-
-
 
 <!-- --------------------------------------------------------------- -->
 
@@ -617,6 +617,8 @@ students_tbl %>%
 
 ```{r phd_comm}
 phd_comm_tbl %>% 
+  mutate(`#` = row_number()) %>% 
+  relocate(`#`) %>% 
   rename_with( .fn = ~ toTitleCase( gsub("_", " ", .x, fixed = TRUE) ) ) %>% 
   kable(format = 'latex', align = 'rlllc', booktabs = TRUE) %>% 
   kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") %>% 
