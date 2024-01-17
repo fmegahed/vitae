@@ -28,7 +28,7 @@ params:
   # identify the last name or full names of graduate students who co-authored publications with you
   # as shown below (make sure that the comma is included in the comments since I will parse based on it)
   # !r is needed to pass an R object (here, a chr vector) as a paramater
-  graduate_student_names: !r c('Lamooki,' , 'Hajifar,', 'Zhao, L.', 'Dolatsara,', 'Mehdizadeh,', 'Yazdi,', 'Cai,', 'Hu,', 'Lu, L.', 'Baghdadi,', 'Mohabbati-Kalejahi,', 'Maman,', 'Weng, B.', 'Tsai, YT.', 'Negahban,', 'Ahmed,', 'Dag,', 'Alhwiti,', 'Ansari,')
+  graduate_student_names: !r c('Ma,', 'Vahedi,', 'Kheiri,', 'Lamooki,' , 'Hajifar,', 'Zhao, L.', 'Dolatsara,', 'Mehdizadeh,', 'Yazdi,', 'Cai,', 'Hu,', 'Lu, L.', 'Baghdadi,', 'Mohabbati-Kalejahi,', 'Maman,', 'Weng, B.', 'Tsai, YT.', 'Negahban,', 'Ahmed,', 'Dag,', 'Alhwiti,', 'Ansari,')
   graduate_student_indicator: '※' # cannot be an a* and has to be a symbol recognized by RMarkdown
   
   # identify the last name or full names of undergrad students who co-authored publications with you
@@ -103,11 +103,11 @@ h_index = profile$h_index
 # -----------------------------------------------------------------------------
 # Get my Google Scholar Publications
 pubs_tbl = 
-  get_publications(params$scholar_id, sortby = 'year') %>%
+  get_publications(params$scholar_id, sortby = 'year') |>
   # ensuring title case for both journal names and paper titles
   mutate(title = tools::toTitleCase(title),
-         journal = tools::toTitleCase(journal) ) %>% 
-  rowwise() %>% 
+         journal = tools::toTitleCase(journal) ) |> 
+  rowwise() |> 
   mutate(
     author = case_when(
       str_ends(author, "\\.\\.\\.") ~ get_complete_authors(id = params$scholar_id, pubid = pubid),
@@ -148,20 +148,20 @@ undergrad_names_with_symbol = str_replace_all(
 names(undergrad_names_with_symbol) = params$undergrad_student_names
 
 formatted_pub_names =
-  formatted_pub_names %>% 
-  str_replace_all(grad_names_with_symbol) %>% 
+  formatted_pub_names |> 
+  str_replace_all(grad_names_with_symbol) |> 
   str_replace_all(undergrad_names_with_symbol)
 
 
-pubs_tbl = pubs_tbl %>% 
-  add_column(formatted_pub_names, .before = 'title') %>% 
+pubs_tbl = pubs_tbl |> 
+  add_column(formatted_pub_names, .before = 'title') |> 
   arrange(desc(year))
 
 
 # --------------------------------------------------------------------------
 
 # Hacking the pubs_tbl to separate journals from conference proceedings, invited papers and arxiv 
-journal_tbl = pubs_tbl %>%
+journal_tbl = pubs_tbl |>
   # needs to be edited
   filter(
     !str_detect(
@@ -170,10 +170,10 @@ journal_tbl = pubs_tbl %>%
       !title %in% params$invited_paper_title
     )
 
-invited_tbl = pubs_tbl %>%
+invited_tbl = pubs_tbl |>
   filter(title %in% params$invited_paper_title)
   
-conf_tbl =  pubs_tbl %>%
+conf_tbl =  pubs_tbl |>
   # needs to be edited
   filter(
     str_detect(journal, pattern = params$conf_pattern) |
@@ -211,24 +211,24 @@ phd_comm_tbl = read_sheet(
 external_funding = read_sheet(
   ss = params$gsheet_link,
   sheet = 'funding'
-) %>% 
+) |> 
   filter(type == 'external')
 
-sponsors_chr = external_funding %>% arrange(desc(total_funding)) %>% 
-  pull(funder) %>% unique() %>% head(n = 6)
+sponsors_chr = external_funding |> arrange(desc(total_funding)) |> 
+  pull(funder) |> unique() |> head(n = 6)
 
 # Computational Grants
 comp_funding = read_sheet(
   ss = params$gsheet_link,
   sheet = 'funding'
-) %>% 
+) |> 
   filter(type == 'computational')
 
 # Internal Grants
 internal_funding = read_sheet(
   ss = params$gsheet_link,
   sheet = 'funding'
-) %>% 
+) |> 
   filter(type == 'internal')
 
 # Classroom Teaching
@@ -237,13 +237,13 @@ classroom_tbl = read_sheet(
   sheet = 'classroom'
 )
 
-classes_taught = classroom_tbl %>% 
-  pull(class) %>% 
-  str_extract('[0-9]{3}') %>% 
+classes_taught = classroom_tbl |> 
+  pull(class) |> 
+  str_extract('[0-9]{3}') |> 
   # The 501 course was cross-listed with 401 so I should not double count it
-  str_replace(pattern = '501', replacement = '401') %>% 
+  str_replace(pattern = '501', replacement = '401') |> 
   # The 480 course is our temp course number and it became 419 in Fall 2022
-  str_replace(pattern = '480', replacement = '419') %>% 
+  str_replace(pattern = '480', replacement = '419') |> 
   unique()
 
 # Teaching Awards
@@ -256,31 +256,31 @@ awards_and_commendations_tbl = read_sheet(
 professional_service = read_sheet(
   ss = params$gsheet_link,
   sheet = 'service'
-) %>% 
-  filter(type == 'external') %>% 
+) |> 
+  filter(type == 'external') |> 
   arrange(desc(end_year))
 
 # Miami Service
 miami_service = read_sheet(
   ss = params$gsheet_link,
   sheet = 'service'
-) %>% 
-  filter(type == 'miami') %>% 
+) |> 
+  filter(type == 'miami') |> 
   arrange(desc(end_year))
 
 # FSB Service
 fsb_service = read_sheet(
   ss = params$gsheet_link,
   sheet = 'service'
-) %>% 
-  filter(type == 'college') %>% 
+) |> 
+  filter(type == 'college') |> 
   arrange(desc(end_year))
 
 # ISA Service
 isa_service = read_sheet(
   ss = params$gsheet_link,
   sheet = 'service'
-) %>% 
+) |> 
   filter(type == 'isa')
 ```
 
@@ -330,11 +330,11 @@ cat(
 
 ## Research
 
-`r fa('bookmark', fill = 'miaimred')` **Externally Funded Research:** ~ \$`r scales::label_number_si(accuracy=0.01)(sum(external_funding$total_funding))` with my share ~ \$ `r scales::label_number_si(accuracy=10)(sum(external_funding$funding_share))`. \ul{Sponsors include:} `r paste(paste(noquote(sponsors_chr[1:5]),collapse=', '), noquote(sponsors_chr[6]),sep=', and ')`.
+`r fa('bookmark', fill = 'miaimred')` **Externally Funded Research:** ~ \$`r scales::label_currency(accuracy = 0.01, scale_cut = scales::cut_short_scale())(sum(external_funding$total_funding))` with my share ~ \$ `r scales::label_currency(accuracy = 10, scale_cut = scales::cut_short_scale())(sum(external_funding$funding_share))`. \ul{Sponsors include:} `r paste(paste(noquote(sponsors_chr[1:5]),collapse=', '), noquote(sponsors_chr[6]),sep=', and ')`.
 
 `r fa('bookmark')` **Publications:** `r nrow(journal_tbl)` peer-reviewed journal papers, `r nrow(invited_tbl)` invited editorials, and `r nrow(conf_tbl)` conference proceedings
 
-`r fa('bookmark')` **Total Citations:** `r total_cites %>% scales::comma()`; \ul{h-index:} `r h_index`, and \ul{i10-index:} `r i_10index`
+`r fa('bookmark')` **Total Citations:** `r total_cites |> scales::comma()`; \ul{h-index:} `r h_index`, and \ul{i10-index:} `r i_10index`
 
 `r fa('bookmark')` **Press Coverage:** Research findings have been covered by over 50 media outlets including: [Arizona Republic Online](http://finance.azcentral.com/azcentral/news/read/37528814/research_shows_value_of_wearable_technology_in_reducing_workplace_injuries), [Bloomberg](https://news.bloombergenvironment.com/safety/wireless-monitoring-can-limit-injuries-but-raises-concerns), [Industry Week](https://www.industryweek.com/talent/using-technology-measure-manufacturing-worker-fatigue), [SupplyChainDive](https://www.supplychaindive.com/news/wearables-warehouse-trucking-worker-labor-safety/610466/) and [Yahoo Finance](https://finance.yahoo.com/news/research-shows-value-wearable-technology-161923455.html).
 
@@ -343,7 +343,7 @@ cat(
 
 `r fa('bookmark')` **PhD Advisor:** for `r nrow(students_tbl)` PhD recipients (all from Auburn University).
 
-`r fa('bookmark')` **Classroom Teaching:** Since joining Miami University in Fall 2016, I have taught `r length(classes_taught)` different courses and a total of `r nrow(classroom_tbl)` sections. The courses spanned the entire spectrum of business analytics, including topics on *introductory statistics*, *data visualization*, *forecasting*, *operations Research*, and *data-driven security*. My pedagogical contributions were recognized with `r awards_and_commendations_tbl %>% filter(type == 'Teaching Award') %>% nrow()` `r if_else(awards_and_commendations_tbl %>% filter(type == 'Teaching Award') %>% nrow() > 1, true ='university-wide teaching awards', false = 'university-wide teaching award' )`, and  `r awards_and_commendations_tbl %>% filter(type == 'Faculty Staff Commendations') %>% nrow()` `r if_else(awards_and_commendations_tbl %>% filter(type == 'Faculty Staff Commendations') %>% nrow() > 1, true ='faculty commendations', false = 'faculty commendation' )` by graduating students as a part of their anonymous survey when they collect their diplomas. 
+`r fa('bookmark')` **Classroom Teaching:** Since joining Miami University in Fall 2016, I have taught `r length(classes_taught)` different courses and a total of `r nrow(classroom_tbl)` sections. The courses spanned the entire spectrum of business analytics, including topics on *introductory statistics*, *data visualization*, *forecasting*, *operations research*, and *data-driven security*. My pedagogical contributions were recognized with `r awards_and_commendations_tbl |> filter(type == 'Teaching Award') |> nrow()` `r if_else(awards_and_commendations_tbl |> filter(type == 'Teaching Award') |> nrow() > 1, true ='university-wide teaching awards', false = 'university-wide teaching award' )`, and  `r awards_and_commendations_tbl |> filter(type == 'Faculty Staff Commendations') |> nrow()` `r if_else(awards_and_commendations_tbl |> filter(type == 'Faculty Staff Commendations') |> nrow() > 1, true ='faculty commendations', false = 'faculty commendation' )` by graduating students as a part of their anonymous survey when they collect their diplomas. 
 
 
 <!-- --------------------------------------------------------------- -->
@@ -362,9 +362,9 @@ tribble(
   'PhD Industrial & Systems Engineering', 2012, 'Virginia Tech', 'Blacksburg, VA',
   'M.S. Industrial & Systems Engineering', 2009, 'Virginia Tech', 'Blacksburg, VA',
   'B.S. Mechanical Engineering', 2008, 'The American University in Cairo', 'Cairo, Egypt'
-) %>% 
-  kable(format = 'latex', align = 'lcll', booktabs = TRUE) %>% 
-  kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") %>% 
+) |> 
+  kable(format = 'latex', align = 'lcll', booktabs = TRUE) |> 
+  kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") |> 
   row_spec(0, align = 'c', bold=T )
 ```
 
@@ -377,21 +377,21 @@ tribble(
 # commented text works well for a small number of awards
 # comment out the awards_tbl part if you want to uncomment the code below
 
-# awards_and_commendations_tbl %>%
-#   filter(type != 'Faculty Staff Commendations') %>%
-#   arrange(end_year) %>%
+# awards_and_commendations_tbl |>
+#   filter(type != 'Faculty Staff Commendations') |>
+#   arrange(end_year) |>
 #   mutate(`#` = row_number(),
-#          year = paste0(year, '--', end_year)) %>%
-#   select(`#`, organization, description, year) %>%
-#   arrange(desc(end_year)) %>%
-#   rename(`#` = `#`, `Awarded By` = organization, `Description` = description, Year = year) %>%
-#   kable(format = 'latex', align = 'lp{0.2\\textwidth}p{0.6\\textwidth}c', booktabs = TRUE) %>%
-#   kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") %>%
+#          year = paste0(year, '--', end_year)) |>
+#   select(`#`, organization, description, year) |>
+#   arrange(desc(end_year)) |>
+#   rename(`#` = `#`, `Awarded By` = organization, `Description` = description, Year = year) |>
+#   kable(format = 'latex', align = 'lp{0.2\\textwidth}p{0.6\\textwidth}c', booktabs = TRUE) |>
+#   kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") |>
 #   row_spec(0, align = 'c', bold=T )
 
 awards_tbl = 
-  awards_and_commendations_tbl %>%
-  filter(type != 'Faculty Staff Commendations') %>%
+  awards_and_commendations_tbl |>
+  filter(type != 'Faculty Staff Commendations') |>
   arrange(desc(end_year))
 
 formated_awards = paste0(
@@ -416,7 +416,8 @@ cat(formated_awards)
 
 \noindent \faUniversity \textbf{Miami University} \hfill \faAt Department of Information Systems and  Analytics \faMapPin[regular]  Oxford, OH  
 
-\faIdBadge \textit{Enders Associate Professor} \hfill \faCalendarCheck[regular] July 2022--current  
+\faIdBadge \textit{FSB Faculty Research Fellow} \hfill \faCalendarCheck[regular] Jul 2023--Jul 2025  
+\faIdBadge \textit{Endres Associate Professor Fellow} \hfill \faCalendarCheck[regular] July 2022--current  
 \faIdBadge \textit{Associate Professor} \hfill \faCalendarCheck[regular] July 2020--current  
 \faIdBadge \textit{Neil R. Anderson Assistant Professor} \hfill \faCalendarCheck[regular] July 2019--Jun 2020   
 \faIdBadge \textit{Assistant Professor} \hfill \faCalendarCheck[regular] Aug 2016--Jun 2020 
@@ -438,7 +439,7 @@ cat(formated_awards)
   $\qquad \qquad$ \ul{Course Materials:} Publicly available at \href{https://github.com/fmegahed/isa444}{ISA 444 GitHub Repo}
 \end{itemize}
 
-\item \textbf{Dissertation Committees:}  Kelly Ayres (Biostatistics, Expected Ph.D. 2023, Saint Louis University), Longwen Zhao (Biostatistics, Ph.D. 2022, Saint Louis University), Sahand Hajifar (Industrial, Ph.D. 2022, University at Buffalo), Saeb Ragani Lamooki (outside reader: Mechanical and Aerospace Engineering, Ph.D. 2022, University at Buffalo), Eileen Rintsch (Geography,  M.S. 2021), Miao Cai (Biostatistics, Ph.D. 2020, Saint Louis University), Amir Baghdadi (outside reader: Mechanical and Aerospace Engineering, Ph.D. 2019, University at Buffalo).
+\item \textbf{Dissertation Committees:}  Kelly Ayres (Biostatistics, Expected Ph.D. 2024, Saint Louis University), Federica Garghetti (external reviewer: Mechanical Engineering, Ph.D. 2023, Politecnico di Milano), Longwen Zhao (Biostatistics, Ph.D. 2022, Saint Louis University), Sahand Hajifar (Industrial, Ph.D. 2022, University at Buffalo), Saeb Ragani Lamooki (outside reader: Mechanical and Aerospace Engineering, Ph.D. 2022, University at Buffalo), Eileen Rintsch (Geography,  M.S. 2021), Miao Cai (Biostatistics, Ph.D. 2020, Saint Louis University), Amir Baghdadi (outside reader: Mechanical and Aerospace Engineering, Ph.D. 2019, University at Buffalo).
 
 \item \textbf{Service:} 
   \begin{itemize}[nosep]
@@ -451,7 +452,7 @@ cat(formated_awards)
 		  \item Dept. Search Committee for \ul{5} TT positions: Member \hfill  \faCalendarCheck[regular] 2017--2020
 		  \item Major/Minor Coordination Committee: 
 		  \begin{itemize}[nosep]
-		     \item Chair \hfill  \faCalendarCheck[regular] 2019--2023
+		     \item Chair \hfill  \faCalendarCheck[regular] 2019--2024
 		     \item Member \hfill  \faCalendarCheck[regular] 2017--2019
 		  \end{itemize} 
 		  \item Center for Analytics and Data Science: Project lead \hfill  \faCalendarCheck[regular]  2016--2019
@@ -529,7 +530,7 @@ actual_conferences = params$actual_conf_names
 names(actual_conferences) = params$terrible_conf_names_google
 
 conf_tbl$formatted_pub_names = 
-  conf_tbl$formatted_pub_names %>% 
+  conf_tbl$formatted_pub_names |> 
   str_replace_all(actual_conferences)
 
 formatted_conf_proc = paste0('1. ', conf_tbl$formatted_pub_names, '.  \n \n')
@@ -602,12 +603,12 @@ cat(formated_comp_funding)
 # PhD Students Advised
 
 ```{r phd_students}
-students_tbl %>% 
-  mutate(`#` = row_number()) %>% 
-  relocate(`#`) %>% 
-  rename_with( .fn = ~ toTitleCase( gsub("_", " ", .x, fixed = TRUE) ) ) %>% 
-  kable(format = 'latex', align = 'cp{0.175\\textwidth}p{0.1\\textwidth}p{0.2\\textwidth}cp{0.275\\textwidth}', booktabs = TRUE) %>% 
-  kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") %>% 
+students_tbl |> 
+  mutate(`#` = row_number()) |> 
+  relocate(`#`) |> 
+  rename_with( .fn = ~ toTitleCase( gsub("_", " ", .x, fixed = TRUE) ) ) |> 
+  kable(format = 'latex', align = 'cp{0.175\\textwidth}p{0.1\\textwidth}p{0.2\\textwidth}cp{0.275\\textwidth}', booktabs = TRUE) |> 
+  kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") |> 
   row_spec(0, align = 'c', bold = T) 
 ```
 
@@ -616,12 +617,12 @@ students_tbl %>%
 # Dissertation Committees
 
 ```{r phd_comm}
-phd_comm_tbl %>% 
-  mutate(`#` = row_number()) %>% 
-  relocate(`#`) %>% 
-  rename_with( .fn = ~ toTitleCase( gsub("_", " ", .x, fixed = TRUE) ) ) %>% 
-  kable(format = 'latex', align = 'rlllc', booktabs = TRUE) %>% 
-  kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") %>% 
+phd_comm_tbl |> 
+  mutate(`#` = row_number()) |> 
+  relocate(`#`) |> 
+  rename_with( .fn = ~ toTitleCase( gsub("_", " ", .x, fixed = TRUE) ) ) |> 
+  kable(format = 'latex', align = 'rlllc', booktabs = TRUE) |> 
+  kable_styling(full_width = F, position = "center", latex_options = "HOLD_position") |> 
   row_spec(0, align = 'c', bold = T) 
 ```
 
