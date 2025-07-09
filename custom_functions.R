@@ -8,13 +8,16 @@ swap_initials <- function(author.name) {
 # modified from scholar package
 format_publications_mod = function (pubs, author.name = NULL) 
 {
-  pubs2 <- pubs %>% strsplit(x = .$author, split = ",")
+  # Fix: Extract the author column properly and split it
+  pubs2 <- strsplit(pubs$author, split = ",")
+  
   pubs$author <- lapply(pubs2, function(x) {
     x <- swap_initials(x)
     x[length(x)] <- paste0("& ", x[length(x)])
     x <- paste0(x, collapse = ", ")
     ifelse(startsWith(x, "& "), sub("& ", "", x), x)
   })
+  
   author.name2 <- swap_initials(author.name)
   res <- pubs %>% 
     arrange(desc(.data$year)) %>%
