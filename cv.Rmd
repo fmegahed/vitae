@@ -338,7 +338,7 @@ cat(
 
 ## Research
 
-`r fa('bookmark', fill = 'miaimred')` **Externally Funded Research:** ~ \$`r scales::label_currency(accuracy = 0.01, scale_cut = scales::cut_short_scale())(sum(external_funding$total_funding))` with my share ~ \$ `r scales::label_currency(accuracy = 10, scale_cut = scales::cut_short_scale())(sum(external_funding$funding_share))`. \ul{Sponsors include:} `r paste(paste(noquote(sponsors_chr[1:5]),collapse=', '), noquote(sponsors_chr[6]),sep=', and ')`.
+`r fa('bookmark', fill = 'miaimred')` **Externally Funded Research:** ~ `r scales::label_currency(accuracy = 0.01, scale_cut = scales::cut_short_scale())(sum(external_funding$total_funding))`. \ul{Sponsors include:} `r paste(paste(noquote(sponsors_chr[1:5]),collapse=', '), noquote(sponsors_chr[6]),sep=', and ')`.
 
 `r fa('bookmark')` **Publications:** `r nrow(journal_tbl)` peer-reviewed journal papers, `r nrow(invited_tbl)` invited editorials, and `r nrow(conf_tbl)` conference proceedings
 
@@ -418,13 +418,14 @@ cat(formated_awards)
 
 # Academic Experience
 
-<!-- No automation in the academic 
+<!-- No automation in the academic -->
+
 \noindent \faUniversity \textbf{Miami University} \hfill \faAt Department of Information Systems and  Analytics \faMapPin[regular]  Oxford, OH  
 
-\faIdBadge \textit{Raymond E. Glos Professor} \hfill \faCalendarCheck[regular] Jul 2025-- Jun 2030
+\faIdBadge \textit{Raymond E. Glos Professor} \hfill \faCalendarCheck[regular] Jul 2025-- Jun 2030  
 \faIdBadge \textit{Professor} \hfill \faCalendarCheck[regular] Jul 2024-- current  
 \faIdBadge \textit{FSB Faculty Research Fellow} \hfill \faCalendarCheck[regular] Jul 2023--Jul 2025  
-\faIdBadge \textit{Endres Associate Professor Fellow} \hfill \faCalendarCheck[regular] Jul 2022--Jun 2024 
+\faIdBadge \textit{Endres Associate Professor Fellow} \hfill \faCalendarCheck[regular] Jul 2022--Jun 2024   
 \faIdBadge \textit{Associate Professor} \hfill \faCalendarCheck[regular] Jul 2020-- Jun 2024  
 \faIdBadge \textit{Neil R. Anderson Assistant Professor} \hfill \faCalendarCheck[regular] July 2019--Jun 2020   
 \faIdBadge \textit{Assistant Professor} \hfill \faCalendarCheck[regular] Aug 2016--Jun 2020 
@@ -469,6 +470,7 @@ cat(formated_awards)
 \end{itemize}
 
 \vspace{\baselineskip}
+
 
 <!-- Auburn -->
 
